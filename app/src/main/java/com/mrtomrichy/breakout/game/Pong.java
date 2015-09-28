@@ -3,7 +3,6 @@ package com.mrtomrichy.breakout.game;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.mrtomrichy.breakout.framework.Game;
@@ -55,7 +54,7 @@ public class Pong implements Game {
       }
     }
 
-    mBall = new Ball(width/2, height/2, brickWidth/4);
+    mBall = new Ball(width/2, (float)(mHeight*0.9), 0, 4, brickWidth/5);
 
     float playerBrickWidth = (float) ((mWidth / BRICK_COUNT) * 1.5);
 
@@ -70,6 +69,8 @@ public class Pong implements Game {
     int width = c.getWidth();
     c.drawRect(0, 0, width, height, mBackgroundPaint);
 
+
+
     for(Brick brick : mBricks) brick.draw(c);
 
     mBall.draw(c);
@@ -79,10 +80,26 @@ public class Pong implements Game {
 
   @Override
   public void update() {
+    movePlayerBlock();
+
+    detectCollisions();
+  }
+
+  public void movePlayerBlock() {
     if(mCurrentTouchPosition == TouchPosition.LEFT) {
       if(mPlayerBlock.getX() > 0) mPlayerBlock.moveLeft();
     } else if(mCurrentTouchPosition == TouchPosition.RIGHT) {
       if(mPlayerBlock.getX() < mWidth - mPlayerBlock.getWidth()) mPlayerBlock.moveRight();
+    }
+
+    //mBall.move();
+  }
+
+  public void detectCollisions() {
+    if(mPlayerBlock.ballHit(mBall)) {
+      mPlayerBlock.setColor(Color.RED);
+    } else {
+      mPlayerBlock.setColor(Color.WHITE);
     }
   }
 

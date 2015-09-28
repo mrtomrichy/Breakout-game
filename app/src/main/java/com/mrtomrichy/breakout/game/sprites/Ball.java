@@ -10,19 +10,29 @@ import android.graphics.Paint;
 public class Ball implements Sprite {
   private float x;
   private float y;
+  private float dx;
+  private float dy;
 
   private float radius;
 
   private static final int color = Color.WHITE;
   private static Paint paint;
 
-  public Ball(float x, float y, float radius) {
+  public Ball(float x, float y, float dx, float dy, float radius) {
     this.x = x;
     this.y = y;
     this.radius = radius;
 
+    this.dx = dx;
+    this.dy = dy;
+
     paint = new Paint();
     paint.setColor(this.color);
+  }
+
+  public void move() {
+    x += dx;
+    y += dy;
   }
 
   @Override
@@ -33,6 +43,10 @@ public class Ball implements Sprite {
   @Override
   public float getY() {
     return y;
+  }
+
+  public float getRadius() {
+    return radius;
   }
 
   @Override
