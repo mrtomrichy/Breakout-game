@@ -5,8 +5,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 
-import com.mrtomrichy.breakout.game.helpers.CollisionDetection;
-
 /**
  * Created by tom on 26/09/15.
  */
@@ -65,17 +63,8 @@ public class Brick implements Sprite {
   public Point[] getPoints() {
     return new Point[]{new Point((int) x, (int) y),
         new Point((int) (x + width), (int) y),
-        new Point((int) x, (int) (y + height)),
-        new Point((int) (x + width), (int) (y + height))};
+        new Point((int) (x + width), (int) (y + height)),
+        new Point((int) x, (int) (y + height))};
   }
-
-  public boolean ballHit(Ball ball) {
-    Point ballCenter = new Point((int) ball.getX(), (int) ball.getY());
-    Point[] brickPoints = getPoints();
-
-    return CollisionDetection.isPointInRect(brickPoints, ballCenter)
-        || CollisionDetection.isLineInCircle(brickPoints, ballCenter, ball.getRadius());
-  }
-
 
 }

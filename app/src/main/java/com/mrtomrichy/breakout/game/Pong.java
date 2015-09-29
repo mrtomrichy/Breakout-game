@@ -10,6 +10,7 @@ import com.mrtomrichy.breakout.game.sprites.Ball;
 import com.mrtomrichy.breakout.game.sprites.Brick;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by tom on 27/09/15.
@@ -54,7 +55,7 @@ public class Pong implements Game {
       }
     }
 
-    mBall = new Ball(width/2, (float)(mHeight*0.9), 0, 4, brickWidth/5);
+    mBall = new Ball((float)(mWidth/2), (float)(mHeight*0.5), 1, 4, brickWidth/5);
 
     float playerBrickWidth = (float) ((mWidth / BRICK_COUNT) * 1.5);
 
@@ -69,8 +70,6 @@ public class Pong implements Game {
     int width = c.getWidth();
     c.drawRect(0, 0, width, height, mBackgroundPaint);
 
-
-
     for(Brick brick : mBricks) brick.draw(c);
 
     mBall.draw(c);
@@ -82,6 +81,9 @@ public class Pong implements Game {
   public void update() {
     movePlayerBlock();
 
+    mBall.move();
+    mBall.checkBounds(0, mWidth, 0, mHeight);
+
     detectCollisions();
   }
 
@@ -91,15 +93,24 @@ public class Pong implements Game {
     } else if(mCurrentTouchPosition == TouchPosition.RIGHT) {
       if(mPlayerBlock.getX() < mWidth - mPlayerBlock.getWidth()) mPlayerBlock.moveRight();
     }
-
-    //mBall.move();
   }
 
   public void detectCollisions() {
-    if(mPlayerBlock.ballHit(mBall)) {
+    if(mBall.detectCollision(mPlayerBlock)) {
       mPlayerBlock.setColor(Color.RED);
     } else {
       mPlayerBlock.setColor(Color.WHITE);
+    }
+
+    Iterator<Brick> it = mBricks.iterator();
+    while(it.hasNext()) {
+      Brick b = it.next();
+      if(mBall.detectCollision(b)) {
+        b.setColor(Color.RED);
+        it.remove();
+      } else {
+        b.setColor(Color.WHITE);
+      }
     }
   }
 
