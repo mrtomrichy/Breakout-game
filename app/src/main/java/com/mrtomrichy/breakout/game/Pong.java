@@ -81,7 +81,12 @@ public class Pong implements Game {
   public void update() {
     movePlayerBlock();
 
-    mBall.move();
+    mBall.move(0.5);
+    mBall.checkBounds(0, mWidth, 0, mHeight);
+
+    detectCollisions();
+
+    mBall.move(0.5);
     mBall.checkBounds(0, mWidth, 0, mHeight);
 
     detectCollisions();

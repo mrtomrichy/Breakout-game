@@ -9,6 +9,8 @@ import android.util.Log;
 import com.mrtomrichy.breakout.game.helpers.CollisionDetection;
 import com.mrtomrichy.breakout.game.helpers.Vector;
 
+import java.util.ArrayList;
+
 /**
  * Created by tom on 27/09/15.
  */
@@ -19,6 +21,8 @@ public class Ball implements Sprite {
   private float dy;
 
   private float radius;
+
+  private ArrayList<Vector> pendingCollisions;
 
   private static final int color = Color.WHITE;
   private static Paint paint;
@@ -33,11 +37,39 @@ public class Ball implements Sprite {
 
     paint = new Paint();
     paint.setColor(this.color);
+
+    this.pendingCollisions = new ArrayList<>();
   }
 
-  public void move() {
-    x += dx;
-    y += dy;
+  public void move(double modifier) {
+    applyCollisions();
+
+    x += dx*modifier;
+    y += dy*modifier;
+  }
+
+  public void applyCollisions() {
+    if(pendingCollisions.size() == 0) return;
+
+    Log.d("COLLISIONS", pendingCollisions.size() + " collisions");
+
+    Vector normal = new Vector(0,0);
+
+    for(int i = 0; i < pendingCollisions.size(); i++) {
+      normal.x += pendingCollisions.get(i).x;
+      normal.y += pendingCollisions.get(i).y;
+    }
+
+    normal.x /= pendingCollisions.size();
+    normal.y /= pendingCollisions.size();
+
+    pendingCollisions.clear();
+
+    float newDx = dx - ((2*normal.x) * ((dx*normal.x) + (dy * normal.y)));
+    float newDy = dy - ((2*normal.y) * ((dx*normal.x) + (dy * normal.y)));
+
+    dx = newDx;
+    dy = newDy;
   }
 
   public void checkBounds(float minX, float maxX, float minY, float maxY) {
@@ -76,12 +108,8 @@ public class Ball implements Sprite {
     Vector normal = CollisionDetection.isLineInCircle(brickPoints, ballCenter, getRadius());
 
     if(normal != null) {
+      pendingCollisions.add(normal);
       Log.d("NORMAL", "dx:"+normal.x+" dy:"+normal.y);
-      float newDx = dx - ((2*normal.x) * ((dx*normal.x) + (dy * normal.y)));
-      float newDy = dy - ((2*normal.y) * ((dx*normal.x) + (dy * normal.y)));
-
-      dx = newDx;
-      dy = newDy;
 
       return true;
     }

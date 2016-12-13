@@ -28,23 +28,30 @@ public class CollisionDetection {
   // http://stackoverflow.com/questions/8721406/how-to-determine-if-a-point-is-inside-a-2d-convex-polygon
   // Returns the vector normal of the angle it collides at or null
   public static Vector isLineInCircle(Point[] points, Point ballCenter, float radius) {
+    int index = -1;
+    float minDistance = Integer.MAX_VALUE;
     for (int i = 0; i < points.length; i++) {
-      if (distanceFromLineToCircle(points[i], points[(i + 1) % points.length], ballCenter) <= radius) {
-        if(i%2 != 0) {
-          Log.d("COLLISION", "YES LAD");
-        }
-        float dx = points[(i + 1) % points.length].x - points[i].x;
-        float dy = points[(i + 1) % points.length].y - points[i].y;
-
-        Vector normal = new Vector(-dy, dx);
-
-        double a = Math.sqrt((normal.x * normal.x) + (normal.y * normal.y));
-
-        normal.x /= a;
-        normal.y /= a;
-
-        return normal;
+      float distance = distanceFromLineToCircle(points[i], points[(i + 1) % points.length], ballCenter);
+      if (distance <= radius && distance < minDistance) {
+        index = i;
+        minDistance = distance;
       }
+    }
+
+    if(index != -1) {
+      Log.d("DISTANCE", "New min distance of " + minDistance + " to edge " + index);
+
+      float dx = points[(index + 1) % points.length].x - points[index].x;
+      float dy = points[(index + 1) % points.length].y - points[index].y;
+
+      Vector normal = new Vector(-dy, dx);
+
+      double a = Math.sqrt((normal.x * normal.x) + (normal.y * normal.y));
+
+      normal.x /= a;
+      normal.y /= a;
+
+      return normal;
     }
 
     return null;
